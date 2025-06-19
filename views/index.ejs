@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Weatherly — Premium Weather App</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      margin: 0;
+      padding: 2rem;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 2rem;
+      text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(15px);
+      border-radius: 20px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 850px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    form {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 1rem;
+      border-radius: 12px;
+      border: none;
+      font-size: 1.1rem;
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+
+    button {
+      padding: 0 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      border: none;
+      border-radius: 12px;
+      color: #000;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,242,254,0.5);
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 14px rgba(0,242,254,0.6);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 12px;
+      table-layout: fixed;
+    }
+
+    thead th {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      color: #a0b3d6;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+    }
+
+    tbody tr {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      transition: background 0.3s ease;
+    }
+
+    tbody tr:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    td {
+      padding: 1rem;
+      vertical-align: middle;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cell-flex {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      height: 100%;
+    }
+
+    .weather-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+    }
+
+    .city-name {
+      font-weight: 600;
+    }
+
+    .condition {
+      font-size: 0.9rem;
+      color: #d0e0ff;
+    }
+
+    .emoji-time {
+      font-size: 0.85rem;
+      margin-top: 0.3rem;
+      opacity: 0.85;
+    }
+
+    form.delete-btn {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  margin: 0; /* remove any default margins */
+}
+
+form.delete-btn button {
+  /* keep existing styles */
+  background: linear-gradient(135deg, #ff416c, #ff4b2b);
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  align-self: center; /* ensure button aligns center vertically */
+}
+
+    form.delete-btn button:hover {
+      box-shadow: 0 5px 14px rgba(255,65,108,0.5);
+    }
+
+    @media (max-width: 600px) {
+      form {
+        flex-direction: column;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>🌤️ Weatherly</h1>
+
+  <div class="container">
+    <form method="POST" action="/add">
+      <input type="text" name="city" placeholder="Enter city name" required />
+      <button type="submit">Add City</button>
+    </form>
+
+    <table>
+      <thead>
+        <tr>
+          <th>City</th>
+          <th>Temp</th>
+          <th>Humidity</th>
+          <th>Condition</th>
+          <th>Time</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% locations.forEach(loc => { %>
+          <tr>
+            <td>
+              <div class="cell-flex">
+                <img class="weather-icon" src="" alt="icon" />
+                <span class="city-name"><%= loc.name %></span>
+              </div>
+            </td>
+            <td class="temp"><%= loc.temp %>°C</td>
+            <td class="humidity"><%= loc.humidity %>%</td>
+            <td class="condition">Loading...</td>
+            <td class="emoji-time">⏳</td>
+            <td>
+              <div class="cell-flex">
+                <form method="POST" action="/delete/<%= loc.id %>" class="delete-btn">
+                  <button type="submit">Delete</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    function formatTime(timeStr) {
+      const date = new Date(timeStr);
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    async function updateWeather() {
+      const rows = document.querySelectorAll('tbody tr');
+      for (const row of rows) {
+        const city = row.querySelector('.city-name').textContent.trim();
+        const iconEl = row.querySelector('.weather-icon');
+        const tempEl = row.querySelector('.temp');
+        const humidityEl = row.querySelector('.humidity');
+        const conditionEl = row.querySelector('.condition');
+        const timeEl = row.querySelector('.emoji-time');
+
+        try {
+          const res = await fetch(`/weather/${city}`);
+          if (!res.ok) continue;
+          const data = await res.json();
+
+          tempEl.textContent = `${data.temp}°C`;
+          humidityEl.textContent = `${data.humidity}%`;
+          conditionEl.textContent = data.description;
+          iconEl.src = data.icon;
+          iconEl.alt = data.description;
+
+          const emoji = data.is_day ? "🌞" : "🌙";
+          const time = data.time ? formatTime(data.time) : "—";
+          timeEl.textContent = `${emoji} ${time}`;
+        } catch (err) {
+          console.error(`Error updating ${city}`, err);
+        }
+      }
+    }
+
+    updateWeather();
+    setInterval(updateWeather, 300000); // every 5 minutes
+  </script>
+</body>
+</html>
